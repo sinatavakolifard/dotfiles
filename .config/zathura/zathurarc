@@ -1,0 +1,87 @@
+# ============================================================
+# Zathura configuration file
+# ------------------------------------------------------------
+# Location: ~/.config/zathura/zathurarc
+# See also: man zathurarc or https://man.archlinux.org/man/zathurarc.5
+# ============================================================
+
+# ------------------------------------------------------------
+# Default view and behavior
+# ------------------------------------------------------------
+set adjust-open "best-fit"       # Fit page to window width on open
+set pages-per-row 1              # One page per row (no spreads)
+set render-loading "false"       # Disable "Loading..." placeholder
+
+# ------------------------------------------------------------
+# Enabling copy to clipboard
+# ------------------------------------------------------------
+set selection-clipboard clipboard
+
+# ------------------------------------------------------------
+# Scrolling
+# ------------------------------------------------------------
+set scroll-page-aware "true"     # Stop scrolling at page boundaries
+set smooth-scroll "true"         # Smooth scrolling animation
+set scroll-full-overlap 0.01     # 1% overlap between pages
+set scroll-step 50               # 50px per scroll step
+
+# ------------------------------------------------------------
+# Zoom and layout
+# ------------------------------------------------------------
+set zoom-min 10                  # Minimum zoom level = 10%
+set guioptions "s"                # Hide unnecessary UI bars
+
+# ------------------------------------------------------------
+# Search
+# ------------------------------------------------------------
+set incremental-search "true"
+
+# ------------------------------------------------------------
+# Fonts and colors (Dark Theme)
+# ------------------------------------------------------------
+set default-bg "#000000"
+set default-fg "#F7F7F6"
+
+set statusbar-fg "#B0B0B0"
+set statusbar-bg "#202020"
+
+set inputbar-bg "#151515"
+set inputbar-fg "#FFFFFF"
+
+set notification-error-bg "#AC4142"
+set notification-error-fg "#151515"
+
+set notification-warning-bg "#AC4142"
+set notification-warning-fg "#151515"
+
+set completion-bg "#303030"
+set completion-fg "#E0E0E0"
+set completion-highlight-bg "#90A959"
+set completion-highlight-fg "#151515"
+
+set notification-bg "#90A959"
+set notification-fg "#151515"
+
+set highlight-color "rgba(159,189,94,0.5)"             # background color of highlighted text
+set highlight-active-color "rgba(159,189,94,0.5)"      # background color of searched text
+
+# ------------------------------------------------------------
+# Dark mode / Recolor
+# ------------------------------------------------------------
+set recolor "false"
+set recolor-lightcolor "#000000"
+set recolor-darkcolor "#E0E0E0"
+set recolor-reverse-video "true"
+set recolor-keephue "true"
+
+# ------------------------------------------------------------
+# Key bindings
+# ------------------------------------------------------------
+map R recolor                         # uppercase R toggles recolor
+
+# ------------------------------------------------------------
+# Optional convenience mappings
+# ------------------------------------------------------------
+map <C-+> zoom in                     # Ctrl + = zoom in
+map <C--> zoom out                    # Ctrl + - zoom out
+map <C-0> zoom 100                    # Ctrl + 0 reset zoom

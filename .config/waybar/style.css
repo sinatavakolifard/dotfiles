@@ -1,0 +1,253 @@
+* {
+    /* `otf-font-awesome` and `nerd-fonts-fira-code` is required to be installed for icons */
+    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+}
+
+window#waybar {
+    background-color: rgba(43, 48, 59, 0.5);
+    /* border-bottom: 3px solid rgba(100, 114, 125, 0.5); */
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/*
+window#waybar.empty {battery#charging
+    background-color: transparent;
+}
+window#waybar.solo {
+    background-color: #FFFFFF;
+}
+*/
+
+window#waybar.termite {
+    background-color: #3F3F3F;
+}
+
+window#waybar.chromium {
+    background-color: #000000;
+    border: none;
+}
+
+button {
+    /* Use box-shadow instead of border so the text isn't offset */
+    box-shadow: inset 0 -3px transparent;
+    /* Avoid rounded borders under each button name */
+    border: none;
+    border-radius: 0;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+    background: inherit;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces button {
+    padding: 1px 5px;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#workspaces button.focused {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces button.urgent {
+    background-color: #eb4d4b;
+}
+
+#workspaces button.active {
+    padding: 0 5px;
+    border-bottom: solid 2px white;
+}
+
+#mode {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#privacy,
+#tray,
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#language,
+#bluetooth,
+#pulseaudio,
+#custom-arch,
+#custom-weather {
+    padding: 0 5px;
+    margin: 0;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    /* background-color: rgba(256, 256, 256, 0.2); */
+}
+
+/* #clock:hover, */
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#language:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+/* #custom-arch:hover, */
+#custom-weather:hover,
+#custom-notification:hover {
+    background-color: rgba(256, 256, 256, 0.2);
+    border-radius: 20px;
+    /* box-shadow: #ffffff 0px 7px 29px 0px; */
+}
+
+#window,
+#workspaces {
+    margin: 0 4px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+#battery {
+    font-size: 16px;
+    /* padding-right: 0; */
+}
+
+#battery.charging {
+    padding-right: 5px;
+}
+
+#battery.charging, #battery.plugged {
+    color: #26A65B;
+}
+
+@keyframes blink {
+    to {
+        color: #ffffff;
+    }
+}
+
+/* Using steps() instead of linear as a timing function to limit cpu usage */
+#battery.critical:not(.charging), #battery.empty:not(.charging) {
+    color: #f53c3c;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#battery.low:not(.charging) {
+    color: #f53c3c;
+}
+
+#power-profiles-daemon {
+    padding-right: 15px;
+}
+
+#language {
+    /* background: #00b093; */
+    padding: 4px 5px 0 5px;
+    /* font-size: 14px; */
+}
+
+#bluetooth {
+    font-size: 16px;
+}
+
+
+#pulseaudio {
+    font-size: 18px;
+    padding-right: 7px;
+}
+
+#pulseaudio.muted {
+    color: #a1a1a1;
+    /* padding-right: 0; */
+}
+
+#network {
+    color: #ffffff;
+    /* padding: 0; */
+    font-size: 16px;
+    padding: 0 10px 0 5.5px;
+}
+
+#network.disconnected, #network.disabled {
+    color: #a1a1a1;
+    /* padding: 0 6px 0 7px; */
+}
+
+#network.disabled {
+    font-size: 16px;
+    padding-right: 10px;
+}
+
+#network.wifi, #network.ethernet {
+    color: #ffffff;
+    /* padding: 0 6px 0 7px; */
+}
+
+#custom-arch {
+    font-size: 16px;
+}
+
+#clock {
+    padding-top: 5px;
+}
+
+#custom-notification {
+    font-family: "NotoSansMono Nerd Font";
+    font-size: 16px;
+    transition: all 0.3s ease;
+    /* padding-left: 8px; */
+}
+
+/* Pop op menu */
+menu {
+    padding: 2px;
+	border-radius: 10px;
+	background: #161320;
+	color: #ffffff;
+}
+
+/* Pop op menu */
+menuitem {
+	border-radius: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+/* Pop op menu */
+menuitem:hover {
+	background-color: #224b6d;
+    color: white;
+}
+
+#privacy {
+    color: #f53c3c
+}

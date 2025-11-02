@@ -1,0 +1,276 @@
+// -*- mode: jsonc -*-
+{   
+    "output": "eDP-1",
+    "layer": "top", // Waybar at top layer
+    "position": "top", // Waybar position (top|bottom|left|right)
+    // "height": 30, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 4, // Gaps between modules (4px)
+    "modules-left": [
+        "custom/arch",
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        // "hyprland/window"
+        "clock"
+    ],
+    "modules-right": [
+        "privacy",
+        "tray",
+        // "custom/weather2",
+        // "custom/weather",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "hyprland/language",
+        "bluetooth",
+        "pulseaudio",
+        "network",
+        "battery",
+        "battery#charging",
+        "custom/notifyLowBattery",
+        "custom/notification"
+    ],
+    "clock": {
+        "format": "{:%a %b %d  %H:%M}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "calendar": {
+                    "mode"          : "month",
+                    "mode-mon-col"  : 3,
+                    "weeks-pos"     : "right",
+                    "on-scroll"     : 1,
+                    "format": {
+                              "months":     "<span color='#ffead3'><b>{}</b></span>",
+                              "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+                              "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+                              "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+                              "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+                              }
+                    },
+        "actions":  {
+                    "on-click-right": "mode"
+                    }
+    },
+    "cpu": {
+        "format": "  {usage}%",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "  {}%"
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "{icon} {temperatureC}°",
+        "format-icons": ["", "", ""]
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon}  {percent}%",
+        "format-icons": ["", "", "", "", "", "", "", "", ""],
+        // "format-icons": [""],
+        "on-scroll-up": "brightnessctl s 5%+",
+        "on-scroll-down": "brightnessctl s 5%-"
+    },
+    "battery": {
+        "interval": 10,
+        "states": {
+            "good": 95,
+            "low": 20,
+            "critical": 10,
+            "empty": 5
+        },
+        "format": "{icon}",
+        "format-full": "󰁹",
+        "format-charging": "",
+        "format-empty": "󰂎",
+        // "format-plugged": "",
+        "tooltip-format": "{capacity}%",
+        // "format-alt": "{time} {icon}",
+        // "format-good": "", // An empty format will hide the module
+        // "format-icons": ["", "", "", "", ""]
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "battery#charging": {
+        "interval": 10,
+        "format": "",
+        "format-charging": "{icon}",
+        "tooltip-format": "{capacity}%\n\n{time} till fully charged",
+        "format-icons": ["󰢟", "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋"]
+    },
+    "battery#bat2": {
+        "bat": "BAT2"
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        // "format-wifi": " ",
+        "format-wifi": "{icon}",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{essid} {signalStrength}%",
+        "format-linked": "{ifname} (No IP) ",
+        // "format-disconnected": " ",
+        "format-disconnected": "󰤯",
+        "format-disabled": "󰤮",
+        // "format-alt": "{ifname}: {ipaddr}/{cidr}", // What is shown instead of icon when you click on item.
+        "menu": "on-click",
+        "menu-file": "$HOME/.config/waybar/network_menu.xml",
+		"menu-actions": {
+			"toggle": "nmcli radio wifi $(nmcli radio wifi | grep -q 'enabled' && echo 'off' || echo 'on')"
+		},
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
+    },
+    "bluetooth": {
+        "format": "󰂯",
+        "format-off": "󰂲",
+        "format-disabled": "󰂲",
+        "format-connected": "󰂱",
+        "format-connected-battery": "󰂱",
+        // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "\n- {device_alias} ({device_address})",
+        "tooltip-format-enumerate-connected-battery": "\n- {device_alias} ({device_address}) \t{device_battery_percentage}%",
+        "on-click": "blueberry"
+    },
+    "pulseaudio": {
+        "scroll-step": 5, // %, can be a float
+        "format": "{icon}",
+        "tooltip-format": "{volume}% {icon}     {format_source}",
+        "format-bluetooth": "{icon}",
+        "format-bluetooth-muted": "{icon}",
+        // "format-muted": "",
+        "format-muted": "󰖁",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            // "default": ["", "", " "]
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "max-volume": 100,
+        "on-click": "pwvucontrol"
+    },
+    // "custom/media": {
+    //     "format": "{}",
+    //     "escape": true,
+    //     "return-type": "json",
+    //     "max-length": 40,
+    //     "on-click": "playerctl play-pause",
+    //     "on-click-right": "playerctl stop",
+    //     "smooth-scrolling-threshold": 10, // This value was tested using a trackpad, it should be lowered if using a mouse.
+    //     "on-scroll-up": "playerctl next",
+    //     "on-scroll-down": "playerctl previous",
+    //     "exec": "$HOME/.config/waybar/scripts/mediaplayer.py 2> /dev/null", // Script in resources/custom_modules folder
+    // },
+    "hyprland/language": {
+        // "format": "{short}",
+        // "format-en": "🇺🇸",
+        // "format-de": "🇩🇪",
+        "format-en": "EN",
+        "format-de": "DE",
+        "format-fa": "FA",
+        "tooltip-format": "{}",
+        "tooltip": false
+    },
+    "custom/arch": {
+        // "format" : "⏻ ",
+        "format": "󰣇",
+        "icon-size": 21,
+		"tooltip": false,
+		"menu": "on-click",
+		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+		"menu-actions": {
+			"shutdown": "shutdown -h now",
+			"reboot": "reboot",
+			"suspend": "systemctl suspend",
+			"hibernate": "systemctl hibernate"
+		}
+    },
+    // "hyprland/window": {
+    //     "format": "",
+    //     "icon": true,
+    //     "icon-size": 20,
+    //     "max-length": 50
+    // },
+    // "custom/weather": {
+    //     "exec": "${HOME}/.config/waybar/scripts/get_weather.sh Kaiserslautern+Germany",
+    //     "return-type": "json",
+    //     "format": "{}",
+    //     "tooltip": true,
+    //     "interval": 3600
+    // },
+    // "custom/weather2": {
+    //     "exec": "python ~/.config/waybar/scripts/weather.py",
+    //     "restart-interval": 300,
+    //     "return-type": "json",
+    //     "on-click": "xdg-open https://weather.com/en-IN/weather/today/l/03db79a4493ee858a78db5d55cc38514967fb58875347aa5e13cfa3625838f58"
+    //     // "format-alt": "{alt}"
+    // },
+    "custom/notification": {
+        "tooltip": false,
+        "format": " {icon} ",
+        "format-icons": {
+            "notification": "󰂚",
+            "none": "󰂜",
+            "dnd-notification": "󰂛",
+            "dnd-none": "󰪑",
+            "inhibited-notification": "󰂚",
+            "inhibited-none": "󰂜",
+            "dnd-inhibited-notification": "󰂛",
+            "dnd-inhibited-none": "󰪑"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+    "custom/notifyLowBattery": {
+        "exec": "~/.config/waybar/scripts/low_battery.sh",
+        "interval": 150,  // Run every 2.5 minutes
+        "tooltip": false
+    },
+    "tray": {
+        "icon-size": 16,
+        "spacing": 13,
+        "reverse-direction": true
+    },
+    "privacy": {
+        "icon-spacing": 12,
+        "icon-size": 14,
+        "transition-duration": 250,
+        "modules": [
+            {
+                "type": "screenshare",
+                "tooltip": true,
+                "tooltip-icon-size": 18
+            },
+            {
+                "type": "audio-out",
+                "tooltip": true,
+                "tooltip-icon-size": 18
+            },
+            {
+                "type": "audio-in",
+                "tooltip": true,
+                "tooltip-icon-size": 18
+            }
+        ],
+        "ignore-monitor": true,
+        "ignore": [
+            {
+                "type": "screenshare",
+                "name": "obs"
+            }
+        ]
+    }
+}
