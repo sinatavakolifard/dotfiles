@@ -156,7 +156,7 @@
             "default": ["󰕿", "󰖀", "󰕾"]
         },
         "max-volume": 100,
-        "on-click": "pwvucontrol"
+        "on-click": "pavucontrol"
     },
     // "custom/media": {
     //     "format": "{}",

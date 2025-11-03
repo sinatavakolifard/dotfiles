@@ -14,6 +14,6 @@
 # fi
 
 # Start with this. Starting with uwsm crashes in some use cases.
-# if [ "$(tty)" = "/dev/tty1" ];then
-#   exec Hyprland
-# fi
+if [ "$(tty)" = "/dev/tty1" ];then
+  exec Hyprland
+fi
