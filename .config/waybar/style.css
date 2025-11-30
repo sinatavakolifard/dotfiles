@@ -91,7 +91,8 @@ button:hover {
 #bluetooth,
 #pulseaudio,
 #custom-arch,
-#custom-weather {
+#custom-weather,
+#custom-notification {
     padding: 0 5px;
     margin: 0;
     color: #ffffff;
@@ -122,6 +123,10 @@ button:hover {
     margin: 0 4px;
 }
 
+.modules-right {
+    padding-right: 5px;
+}
+
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left > widget:first-child > #workspaces {
     margin-left: 0;
@@ -137,9 +142,9 @@ button:hover {
     /* padding-right: 0; */
 }
 
-#battery.charging {
+/* #battery.charging {
     padding-right: 5px;
-}
+} */
 
 #battery.charging, #battery.plugged {
     color: #26A65B;
@@ -169,11 +174,11 @@ button:hover {
     padding-right: 15px;
 }
 
-#language {
-    /* background: #00b093; */
+/* #language {
+    background: #00b093;
     padding: 4px 5px 0 5px;
-    /* font-size: 14px; */
-}
+    font-size: 14px;
+} */
 
 #bluetooth {
     font-size: 16px;
@@ -182,7 +187,7 @@ button:hover {
 
 #pulseaudio {
     font-size: 18px;
-    padding-right: 7px;
+    /* padding-right: 7px; */
 }
 
 #pulseaudio.muted {
@@ -202,10 +207,10 @@ button:hover {
     /* padding: 0 6px 0 7px; */
 }
 
-#network.disabled {
+/* #network.disabled {
     font-size: 16px;
     padding-right: 10px;
-}
+} */
 
 #network.wifi, #network.ethernet {
     color: #ffffff;
@@ -216,9 +221,9 @@ button:hover {
     font-size: 16px;
 }
 
-#clock {
+/* #clock {
     padding-top: 5px;
-}
+} */
 
 #custom-notification {
     font-family: "NotoSansMono Nerd Font";
