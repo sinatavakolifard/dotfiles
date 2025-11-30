@@ -26,3 +26,4 @@ export HISTFILESIZE=20000
 # alias passc='pass -c $(python3 ~/.config/hypr/scripts/pass_path_generator.py "$(pass)" | fzf --reverse)'
 alias passc="PASSWORD=\$(python3 ~/.config/hypr/scripts/pass_path_generator.py \"\$(pass)\" | fzf --reverse) && echo \$PASSWORD | awk -F'/' '{print \$NF}' | wl-copy && pass -c \$PASSWORD"
 alias passd='pass delete $(python3 ~/.config/hypr/scripts/pass_path_generator.py "$(pass)" | fzf --reverse)'
+alias code='code --ozone-platform=wayland'
