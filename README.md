@@ -1,20 +1,28 @@
-# Install these packages for a basic Arch linux
+# Hyprland dotfiles on my Arch Linux
+
+This repository consists of my dotfiles for Hyprland in Arch Linux. It looks like this:
+
+![Diagram](images/workspace_screenshot.png)
+
+Next, there is a simple instruction to set up a complete Arch Linux with Hyprland. Keep in mind that some packages might be specific to my system. So you need to find and install ones which are compatible to your system. 
+
+## Install these packages for a basic Arch linux
 `sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode intel-media-driver mesa sudo git nano man-db man-pages texinfo tlp`
 
 
-# Install these packages for these configs
+## Install these packages for these configs
 `sudo pacman -S hyprland hyprpaper hypridle hyprpaper hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie`
 
 
-# Do this after installing
+## Give execution permissions to scripts
 `chmod +x .config/waybar/scripts/*`
 
 
-# Install these packages for a complete Arch linux with Hyprland
+## Install these packages for a complete Arch linux with Hyprland
 `sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift`
 
 
-# Enable these services afterward
+## Enable these services afterward
 ```
 sudo systemctl enable tlp.service
 sudo systemctl start tlp.service
@@ -23,7 +31,7 @@ sudo systemctl start bluetooth.service
 ```
 
 
-# Add wifi connection which has username and password
+## Add wifi connection which has username and password
 
 1. Search for available wifis:
 ```
@@ -41,11 +49,14 @@ nmcli connection add \
   802-1x.password "<YOUR_PASSWORD>" \
   802-1x.phase2-auth mschapv2 \
   connection.autoconnect yes
-nmcli connection up "LMW-42-Netz" --ask
+nmcli connection up "<YOUR_USERNAME>" --ask
 ```
 
 
-# Timeshift - reate snapshots (in ext4 hard disk format)
+## Timeshift - reate snapshots (in ext4 hard disk format)
+
+After setting up everything, create a snapshot of your system with Timeshift so that if in the future you face any breaks in your system, you can easily revert to previous versions.
+
 ### Listing snapshots:
 
 `sudo timeshift --list`
@@ -62,11 +73,12 @@ nmcli connection up "LMW-42-Netz" --ask
 
 `sudo timeshift --delete --snapshot "snapshot"`
 
-More info: https://wiki.archlinux.org/title/Timeshift
+To create snapshot of Btrfs filesystems or getting more info, visit this link: https://wiki.archlinux.org/title/Timeshift
 
 
-# Mount and unmount USBs and external hard disks
-To make mounting to be automatic, use this in hyprland.conf:
+## Mount and unmount USBs and external hard disks
+
+Hyprland by default does not support automatic mounting and unmounting external devices like USBs. To make mounting automatic, use this in hyprland.conf:
 
 `exec-once = udiskie`
 
@@ -78,7 +90,7 @@ udiskie-umount --detach /run/media/<username><external_usb_name>
 ```
 
 To manually mount a device if it fails:
-```
+```bash
 lsblk
 udiskie-mount /dev/sda1
 ```
