@@ -5,7 +5,7 @@ This repository contains my personal dotfiles and setup instructions for Hyprlan
 Its workspace looks like this:
 
 <p align="center">
-  <img src="images/workspace_screenshot.png" alt="Hyprland workspace screenshot" width="90%">
+  <img src="images/workspace_screenshot.png" alt="Hyprland workspace screenshot" width="100%">
 </p>
 
 Next, there is a simple instruction to set up a complete Arch Linux with Hyprland. Keep in mind that some packages might be specific to my system. So you need to find and install ones which are compatible to your system. 
@@ -27,12 +27,14 @@ sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hy
 
 ### Optional packages for a complete setup
 ```
-sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift
+sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pass feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift
 ```
 
 ## Scripts permissions
 ### Give execution permissions to scripts
-`chmod +x .config/waybar/scripts/*`
+```
+chmod +x .config/waybar/scripts/*
+```
 
 
 ## Systemd services
@@ -67,6 +69,78 @@ nmcli connection add \
 nmcli connection up "<YOUR_USERNAME>" --ask
 ```
 
+## Password manager
+We use pass which is a simple password manager for the command line (https://wiki.archlinux.org/title/Pass)
+
+### Create a GPG key (use RSA with 4096 bits)
+```
+gpg --full-generate-key
+```
+
+You can see the already created keys with this:
+```
+gpg -k
+```
+
+### To initialize the password store:
+
+```
+pass init gpg-id_or_email
+```
+
+### To create a new password, first provide a descriptive hierarchical name.
+
+```
+pass insert archlinux.org/wiki/username
+```
+
+### To get a view of the password store do the following.
+
+```
+pass
+```
+
+output:
+```
+Password Store
+└── archlinux.org
+    └── wiki
+        └── username
+```
+
+### To retrieve a single password:
+
+```
+pass [-c] archlinux.org/wiki/username
+```
+
+Or simply by my script, use this command and choose password:
+
+```
+passc
+```
+
+### To generate a new random password do this, where n is the desired password length as a number:
+
+```
+pass generate archlinux.org/wiki/username n
+```
+
+### To delete a password
+```
+pass delete archlinux.org/wiki/username
+```
+
+Or simply by my script, use this command and choose password:
+```
+passd
+```
+
+### To edit a password:
+```
+pass edit archlinux.org/wiki/username
+```
+
 
 ## Timeshift - create snapshots (in ext4 hard disk format)
 
@@ -74,19 +148,27 @@ After setting up everything, create a snapshot of your system with Timeshift so 
 
 ### Listing snapshots:
 
-`sudo timeshift --list`
+```
+sudo timeshift --list
+```
 
 ### Creating a snapshot:
 
-`sudo timeshift --create --comments "comment"`
+```
+sudo timeshift --create --comments "comment"
+```
 
 ### Restoring a snapshot:
 
-`sudo timeshift --restore --snapshot "snapshot"`
+```
+sudo timeshift --restore --snapshot "snapshot"
+```
 
 ### Deleting a snapshot:
 
-`sudo timeshift --delete --snapshot "snapshot"`
+```
+sudo timeshift --delete --snapshot "snapshot"
+```
 
 To create snapshot of Btrfs filesystems or getting more info, visit this link: https://wiki.archlinux.org/title/Timeshift
 
@@ -95,7 +177,9 @@ To create snapshot of Btrfs filesystems or getting more info, visit this link: h
 
 Hyprland by default does not support automatic mounting and unmounting external devices like USBs. To make mounting automatic, use this in hyprland.conf:
 
-`exec-once = udiskie`
+```
+exec-once = udiskie
+```
 
 To unmount a disk and detach it so that you can safely remove it:
 
