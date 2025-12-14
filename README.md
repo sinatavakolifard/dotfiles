@@ -15,7 +15,7 @@ Next, there is a simple instruction to set up a complete Arch Linux with Hyprlan
 
 ### Basic Arch Linux packages
 ```
-sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode intel-media-driver mesa sudo git nano man-db man-pages texinfo tlp
+sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode intel-media-driver mesa sudo git nano vi man-db man-pages texinfo tlp bluez bluez-utils
 ```
 
 
@@ -45,6 +45,12 @@ sudo systemctl enable --now tlp.service
 sudo systemctl enable --now bluetooth.service
 ```
 
+## Cloning this repository
+After cloning this repository, you have to link these config folders to your config folders in your system so that they work as expected.
+For example:
+```
+ln -sf ~/dotfiles/.config/waybar ~/.config/waybar
+```
 
 ## Wi-Fi setup
 
@@ -189,9 +195,48 @@ udiskie-umount --detach /run/media/<username><external_usb_name>
 ```
 
 To manually mount a device if it fails:
-```bash
+```
 lsblk
 udiskie-mount /dev/sda1
 ```
 
 More info: https://man.archlinux.org/man/extra/udiskie/udiskie.8.en
+
+
+## Bluetooth
+We use this command to enter bluetooth controller:
+```
+bluetoothctl
+```
+
+Then you can use these commands there to find and connect to a bluetooth:
+```
+[bluetooth]# default-agent
+Default agent request successful
+
+[bluetooth]# power on
+Changing power on succeeded
+[CHG] Controller 00:10:20:30:40:50 Powered: yes
+
+[bluetooth]# scan on
+Discovery started
+[CHG] Controller 00:10:20:30:40:50 Discovering: yes
+[NEW] Device 00:12:34:56:78:90 device name
+[CHG] Device 00:12:34:56:78:90 LegacyPairing: yes
+
+[bluetooth]# pair 00:12:34:56:78:90
+Attempting to pair with 00:12:34:56:78:90
+[CHG] Device 00:12:34:56:78:90 Connected: yes
+[CHG] Device 00:12:34:56:78:90 Connected: no
+[CHG] Device 00:12:34:56:78:90 Connected: yes
+Request PIN code
+[agent] Enter PIN code: 1234
+[CHG] Device 00:12:34:56:78:90 Paired: yes
+Pairing successful
+[CHG] Device 00:12:34:56:78:90 Connected: no
+
+[bluetooth]# connect 00:12:34:56:78:90
+Attempting to connect to 00:12:34:56:78:90
+[CHG] Device 00:12:34:56:78:90 Connected: yes
+Connection successful
+```
