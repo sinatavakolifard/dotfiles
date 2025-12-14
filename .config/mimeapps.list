@@ -1,0 +1,18 @@
+[Default Applications]
+# PDF files
+application/pdf=zathura.desktop
+
+# Images
+image/jpeg=feh.desktop
+image/png=feh.desktop
+
+# Video
+video/mp4=mpv.desktop
+video/x-matroska=mpv.desktop
+
+# Browser
+x-scheme-handler/http=librewolf.desktop
+x-scheme-handler/https=librewolf.desktop
+
+# Text files
+text/plain=code.desktop
