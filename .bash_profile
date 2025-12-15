@@ -17,3 +17,6 @@
 if [ "$(tty)" = "/dev/tty1" ];then
   exec Hyprland
 fi
+
+# Put Flutter bin to path 
+export PATH="$HOME/Packages/flutter/bin:$PATH"

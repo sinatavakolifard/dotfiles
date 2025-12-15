@@ -27,7 +27,7 @@ sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hy
 
 ### Optional packages for a complete setup
 ```
-sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pass feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift
+sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pass feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift zip unzip
 ```
 
 ## Scripts permissions
@@ -50,6 +50,14 @@ After cloning this repository, you have to link these config folders to your con
 For example:
 ```
 ln -sf ~/dotfiles/.config/waybar ~/.config/waybar
+```
+
+## Install yay
+To work with aur packages, you can use yay.
+```
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
 ```
 
 ## Wi-Fi setup
