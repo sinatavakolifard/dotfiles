@@ -18,7 +18,7 @@
         "privacy",
         "tray",
         // "custom/weather2",
-        // "custom/weather",
+        "custom/weather",
         "cpu",
         "memory",
         "temperature",
@@ -110,7 +110,7 @@
         "format-wifi": "{icon}",
         "format-ethernet": "{ipaddr}/{cidr} ",
         "tooltip-format": "{essid} {signalStrength}%",
-        "format-linked": "{ifname} (No IP) ",
+        // "format-linked": "{ifname} (No IP) ",
         // "format-disconnected": " ",
         "format-disconnected": "󰤯",
         "format-disabled": "󰤮",
@@ -200,13 +200,13 @@
     //     "icon-size": 20,
     //     "max-length": 50
     // },
-    // "custom/weather": {
-    //     "exec": "${HOME}/.config/waybar/scripts/get_weather.sh Kaiserslautern+Germany",
-    //     "return-type": "json",
-    //     "format": "{}",
-    //     "tooltip": true,
-    //     "interval": 3600
-    // },
+    "custom/weather": {
+        "exec": "${HOME}/.config/waybar/scripts/get_weather.sh Kaiserslautern+Germany",
+        "return-type": "json",
+        "format": "{}",
+        "tooltip": true,
+        "interval": 3600
+    },
     // "custom/weather2": {
     //     "exec": "python ~/.config/waybar/scripts/weather.py",
     //     "restart-interval": 300,

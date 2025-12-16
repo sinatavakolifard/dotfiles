@@ -21,13 +21,13 @@ sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode int
 
 ### Hyprland and config-related packages
 ```
-sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie
+sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie
 ```
 
 
 ### Optional packages for a complete setup
 ```
-sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pass feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift zip unzip
+sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pass feh superfile ttf-dejavu ttf-liberation adw-gtk-theme timeshift zip unzip sshuttle
 ```
 
 ## Scripts permissions
@@ -81,6 +81,11 @@ nmcli connection add \
   802-1x.phase2-auth mschapv2 \
   connection.autoconnect yes
 nmcli connection up "<YOUR_USERNAME>" --ask
+```
+
+3. If you just wanna connect to a network:
+```
+nmcli device wifi connect "<SSID>" --ask
 ```
 
 ## Password manager
