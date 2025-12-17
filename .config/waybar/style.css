@@ -92,6 +92,7 @@ button:hover {
 #pulseaudio,
 #custom-arch,
 #custom-weather,
+#custom-weather3,
 #custom-notification {
     padding: 0 5px;
     margin: 0;
@@ -112,6 +113,7 @@ button:hover {
 #pulseaudio:hover,
 /* #custom-arch:hover, */
 #custom-weather:hover,
+#custom-weather3:hover,
 #custom-notification:hover {
     background-color: rgba(256, 256, 256, 0.2);
     border-radius: 20px;

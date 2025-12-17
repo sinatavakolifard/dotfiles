@@ -18,7 +18,8 @@
         "privacy",
         "tray",
         // "custom/weather2",
-        "custom/weather",
+        // "custom/weather",
+        "custom/weather3",
         "cpu",
         "memory",
         "temperature",
@@ -200,12 +201,19 @@
     //     "icon-size": 20,
     //     "max-length": 50
     // },
-    "custom/weather": {
-        "exec": "${HOME}/.config/waybar/scripts/get_weather.sh Kaiserslautern+Germany",
+    // "custom/weather": {
+    //     "exec": "${HOME}/.config/waybar/scripts/get_weather.sh Kaiserslautern+Germany",
+    //     "return-type": "json",
+    //     "format": "{}",
+    //     "tooltip": true,
+    //     "interval": 3600
+    // },
+    "custom/weather3": {
+        "exec": "${HOME}/.config/waybar/scripts/new_weather.sh",
         "return-type": "json",
         "format": "{}",
         "tooltip": true,
-        "interval": 3600
+        "interval": 1800
     },
     // "custom/weather2": {
     //     "exec": "python ~/.config/waybar/scripts/weather.py",
