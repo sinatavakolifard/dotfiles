@@ -25,3 +25,8 @@ style = "Italic"
 [font.normal]
 family = "SourceCodeVF"
 style = "Regular"
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"
