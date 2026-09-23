@@ -21,7 +21,7 @@ sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode int
 
 ### Hyprland and config-related packages
 ```
-sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie
+sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie jq
 ```
 
 
@@ -50,6 +50,13 @@ After cloning this repository, you have to link these config folders to your con
 For example:
 ```
 ln -sf ~/dotfiles/.config/waybar ~/.config/waybar
+```
+
+## Weather in waybar
+To be able to use weather in waybar, create a .env file in your home directory (if not already existed) and add these lines based on your current location there so that it fetches your weather data.
+```
+LATITUDE=12.1234
+LONGITUDE=12.1234
 ```
 
 ## Install yay
@@ -252,4 +259,16 @@ Pairing successful
 Attempting to connect to 00:12:34:56:78:90
 [CHG] Device 00:12:34:56:78:90 Connected: yes
 Connection successful
+```
+
+## TLP
+This is a power management tool for linux. Its configurations can be found in /etc/tlp.conf
+To change configurations, you need to change them there. For example:
+```
+START_CHARGE_THRESH_BAT0=70
+STOP_CHARGE_THRESH_BAT0=80
+```
+These configurations set the maximum charging of 80% to the battery and the battery will start to charge again if it reaches below 70%. To see if these min and max configurations are taking place, run this command:
+```
+sudo tlp-stat -b
 ```
