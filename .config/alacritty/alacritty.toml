@@ -11,19 +11,19 @@ padding = { x = 2, y = 10 }
 size = 11
 
 [font.bold]
-family = "SourceCodeVF"
+family = "DejaVu Sans Mono"
 style = "Bold"
 
 [font.bold_italic]
-family = "SourceCodeVF"
+family = "DejaVu Sans Mono"
 style = "Bold Italic"
 
 [font.italic]
-family = "SourceCodeVF"
+family = "DejaVu Sans Mono"
 style = "Italic"
 
 [font.normal]
-family = "SourceCodeVF"
+family = "DejaVu Sans Mono"
 style = "Regular"
 
 [[keyboard.bindings]]
