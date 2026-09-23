@@ -15,8 +15,6 @@
 
 # Start with this. Starting with uwsm crashes in some use cases.
 if [ "$(tty)" = "/dev/tty1" ];then
-  exec Hyprland
+  # exec Hyprland
+  exec start-hyprland
 fi
-
-# Put Flutter bin to path 
-export PATH="$HOME/Packages/flutter/bin:$PATH"

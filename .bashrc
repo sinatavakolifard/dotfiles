@@ -7,7 +7,8 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
-PS1='[\u@\h \W]\$ '
+# PS1='[\u@\h \W]\$ '
+PS1='\[\e[1;36m\]\u@\h \[\e[0;36m\]\W\[\e[0m\]\$ '
 [ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 
@@ -27,3 +28,9 @@ export HISTFILESIZE=20000
 alias passc="PASSWORD=\$(python3 ~/.config/hypr/scripts/pass_path_generator.py \"\$(pass)\" | fzf --reverse) && echo \$PASSWORD | awk -F'/' '{print \$NF}' | wl-copy && pass -c \$PASSWORD"
 alias passd='pass delete $(python3 ~/.config/hypr/scripts/pass_path_generator.py "$(pass)" | fzf --reverse)'
 alias code='code --ozone-platform=wayland'
+
+# Put Flutter bin to path 
+export PATH="$HOME/Packages/flutter/bin:$PATH"
+
+# Put Claude bin to path
+export PATH="$HOME/.local/bin:$PATH"
