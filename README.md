@@ -15,13 +15,13 @@ Next, there is a simple instruction to set up a complete Arch Linux with Hyprlan
 
 ### Basic Arch Linux packages
 ```
-sudo pacman -S base base-devel linux linux-firmware sof-firmware intel-ucode intel-media-driver mesa sudo git nano vi man-db man-pages texinfo tlp bluez bluez-utils
+sudo pacman -S base base-devel linux linux-firmware linux-headers sof-firmware intel-ucode intel-media-driver mesa sudo git openssh nano vi pipewire pipewire-alsa pipewire-pulse man-db man-pages texinfo tlp bluez bluez-utils
 ```
 
 
 ### Hyprland and config-related packages
 ```
-sudo pacman -S hyprland hyprpaper hypridle hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl blueberry networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie jq
+sudo pacman -S hyprland hyprpaper hypridle hyprlock hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie jq
 ```
 
 
@@ -65,6 +65,11 @@ To work with aur packages, you can use yay.
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
+```
+
+## somke apps need yay
+```
+yay -S blueberry
 ```
 
 ## Wi-Fi setup
@@ -271,4 +276,91 @@ STOP_CHARGE_THRESH_BAT0=80
 These configurations set the maximum charging of 80% to the battery and the battery will start to charge again if it reaches below 70%. To see if these min and max configurations are taking place, run this command:
 ```
 sudo tlp-stat -b
+```
+
+
+## BTRFS file systems with LUKS disk encryption
+If you want to encrypt your disk while installing Arch linux and use BTRFS with multiple subvolumes, use this:
+
+When you are partitioning your disk, do it this way:
+```
+cfdisk /dev/nvme0n1
+```
+And create 2 volumes. One with 1GB for boot and the other partition for the rest.
+
+Then:
+```
+cryptsetup luksFormat /dev/nvme0n1p2
+cryptsetup open /dev/nvme0n1p2 cryptroot
+
+mkfs.fat -F 32 /dev/nvme0n1p1
+mkfs.btrfs -L ARCH_ROOT /dev/mapper/cryptroot
+
+mount /dev/mapper/cryptroot /mnt
+
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@snapshots
+btrfs subvolume create /mnt/@swap
+
+umount /mnt
+
+mount -o subvol=@,compress=zstd /dev/mapper/cryptroot /mnt
+mkdir -p /mnt/{home,.snapshots,boot,swap}
+mount -o subvol=@home,compress=zstd /dev/mapper/cryptroot /mnt/home
+mount -o subvol=@snapshots,compress=zstd /dev/mapper/cryptroot /mnt/.snapshots
+mount -o subvol=@swap /dev/mapper/cryptroot /mnt/swap
+mount /dev/nvme0n1p1 /mnt/boot
+
+btrfs filesystem mkswapfile --size 72G /mnt/swap/swapfile
+swapon /mnt/swap/swapfile
+```
+
+To enable hibenation, first you'll need to run this line:
+```
+btrfs inspect-internal map-swapfile -r /swap/swapfile
+```
+
+It will give you a number. Save or remember it for later
+
+After this, the rest of installation is the same until you wanna run mkinitcpio -P. Before running that:
+
+```
+nano /etc/mkinitcpio.conf
+```
+Look for a line like this:
+```
+HOOKS=(base systemd autodetect microcode modconf kms keyboard block sd-encrypt filesystems fsck)
+```
+Add sd-vconsole to it:
+```
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)
+```
+Then run this command:
+```
+mkinitcpio -P
+```
+
+Finally when you wanna edit arch.conf file, first get the UUID of LUKS encrypted part:
+```
+cryptsetup luksUUID /dev/nvme0n1p2
+```
+
+Then with it and with the number we got from swap part before, arch.conf should be like this:
+```
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options rd.luks.name=<LUKS_UUID>>=cryptroot root=/dev/mapper/cryptroot rootflags=subvol=@ resume=/dev/mapper/cryptroot resume_offset=<swap_number> rw
+```
+
+# Tuxedo laptops:
+In Tuxedo laptops, do not install tlp or power-profile-daemon. Install this instead and enable it:
+```
+yay -S tuxedo-drivers-dkms tuxedo-control-center-bin
+```
+
+Also install these in Nvidia GPUs:
+```
+sudo pacman -S nvidia-open nvidia-prime nvidia-utils
 ```
