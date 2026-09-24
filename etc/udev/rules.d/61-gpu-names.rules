@@ -1,0 +1,2 @@
+KERNEL=="card*", KERNELS=="0000:00:02.0", SUBSYSTEM=="drm", SYMLINK+="dri/igpu"
+KERNEL=="card*", KERNELS=="0000:02:00.0", SUBSYSTEM=="drm", SYMLINK+="dri/dgpu"
