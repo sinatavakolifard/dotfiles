@@ -1,0 +1,102 @@
+:w -> save
+:w filename -> save to a new filename
+:wq -> save and exit
+:x -> save and exit
+:up -> save only if file is changed
+
+On normal mode:
+x -> if you are on a char and press x, the char will be deleted
+i -> go to insertion mode and insert before curser
+a -> go to insertion mode and insert after curser 
+A -> goes to end of a line so that you can append something there
+dw -> delete until start of the next word 
+de -> delete until end of the current word (including end) 
+d$ -> delete from curser until end of the line
+dd -> delete whole line
+2dd -> delete 2 lines
+u -> undo a command
+U -> fix a whole line
+ctrl+r -> redo (to undo the undo)
+
+Motions:
+w -> start of next word
+e -> end of current word
+$ -> end of line
+0 -> start of line
+number+motion (2w, 3w) -> move the curser to n many times (2w -> move curser to start of 2nd word, d2w-> delete 2 next words)/
+
+
+Operators:
+- Put:
+p after dd -> puts the deleted line below curser
+P after dd -> puts the deleted line above curser
+
+- Replace:
+rx (or ra, rb, ...) -> replace current char with x (or a, b, ...)
+R -> puts you in replace mode and every char you put, replaces with current one (you can replace more chars)
+
+- Change
+ce -> change until end of current word (deletes word after curser until end of it and goes to insert mode)
+cw, c$ -> the same for motions
+
+Curser location:
+gg -> move to start of the page
+G -> move to button of the page
+7G -> move to line 7
+
+
+Commands:
+- search:
+/[word]<enter> -> search for [word] forwards (n to move to next, N to move to previous)
+?[word]<enter> -> search for [word] backwards
+
+- search matching (, [ or {
+% -> moves curser to the closing or opening other ), ] or }
+
+- substitute
+:s/old/new/ -> changes first "old" to "new" in the current line
+:s/old/new/g -> changes all "old"s to "new" in the current line
+:2,7s/old/new/g -> changes all "old"s to "new" in lines from 2 to 7
+:%s/old/new/g -> changes all "old"s to "new" in the whole file
+:%s/old/new/gc -> changes all "old"s to "new" in the whole file with a prompt whether to substitute or not
+
+- external command
+:![command] -> execute external [command]
+
+- open command
+o -> opens a line below curser and puts curser there in insert mode
+O -> opens a line above curser and puts curser there in insert mode
+
+
+Visual mode:
+- write a part of text to a file
+v -> start visual mode which moving curser will select text
+Then you can enter : which will write :'<,'>
+Then you can write save the selected text in a file with :'<,'>w [filename]
+
+- copy and paste
+v -> select text
+y -> yank (copy)
+p -> put (paste) after curser
+P -> paste befre curser
+yw -> copy one word
+
+
+Retrieve:
+:r [filename] -> pastes content of [filename] where curser is
+:r ![command] -> pastes result of [command] where curser is
+
+Set:
+:set xxx -> set xxx option where xxx can be:
+     ic -> ignore case for searching
+     hls -> highlight all search matches
+
+:set noxxx -> turn off the xxx option
+:set invxxx -> invert value of xxx option
+
+Completion:
+:[something]<tab> -> it shows the list of commands starting with [something]
+
+Telescope:
+<space>ff -> search for filenames
+<space>fg -> search for file content

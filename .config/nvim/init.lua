@@ -82,27 +82,9 @@ end, { desc = 'Print the git blame for the current line' })
 
 -- PLUGINS
 --
--- See `:h :packadd`, `:h vim.pack`
+-- Managed by lazy.nvim, specs live in lua/plugins/. See `:h lazy.nvim`
+require('config.lazy')
 
 -- Add the "nohlsearch" package to automatically disable search highlighting after
--- 'updatetime' and when going to insert mode.
-vim.cmd('packadd! nohlsearch')
-
--- Install third-party plugins via "vim.pack.add()".
-vim.pack.add({
-  -- Quickstart configs for LSP
-  'https://github.com/neovim/nvim-lspconfig',
-  -- Fuzzy picker
-  'https://github.com/ibhagwan/fzf-lua',
-  -- Autocompletion
-  'https://github.com/nvim-mini/mini.completion',
-  -- Enhanced quickfix/loclist
-  'https://github.com/stevearc/quicker.nvim',
-  -- Git integration
-  'https://github.com/lewis6991/gitsigns.nvim',
-})
-
-require('fzf-lua').setup { fzf_colors = true }
-require('mini.completion').setup {}
-require('quicker').setup {}
-require('gitsigns').setup {}
+-- 'updatetime' and when going to insert mode. Loaded after lazy because it resets the runtimepath.
+vim.cmd.packadd('nohlsearch')

@@ -21,7 +21,7 @@ sudo pacman -S base base-devel linux linux-firmware linux-headers sof-firmware i
 
 ### Hyprland and config-related packages
 ```
-sudo pacman -S hyprland hyprpaper hypridle hyprlock hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie jq
+sudo pacman -S hyprland hyprpaper hypridle hyprlock hyprpolkitagent xdg-desktop-portal-hyprland waybar wofi swaync alacritty ttf-firacode-nerd noto-fonts-emoji pavucontrol brightnessctl networkmanager upower grim slurp wl-clipboard libnotify fzf udiskie jq neovim tree-sitter-cli ripgrep fd tree-sitter-cli
 ```
 
 
