@@ -10,14 +10,30 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
-local laptopOutput = "eDP-1"
-local laptopMonitor = { mode = "2880x1800@90", position = "1600x1440", scale = 1.66669 }
+
+-- Find the connector whose EDID contains the given text (e.g. a serial or panel name).
+-- sysfs has the EDIDs before Hyprland has set up any monitors, so this works on the first load.
+local function outputByEdid(text)
+    local p = io.popen("grep -l -a " .. text .. " /sys/class/drm/*/edid")
+    local path = p:read("l")
+    p:close()
+    return path and path:match("card%d+%-(.-)/edid$") -- e.g. /sys/class/drm/card1-DP-2/edid -> DP-2
+end
+
+-- The two laptops this config runs on. The 0x4193 panel has no name in its EDID,
+-- so it is the fallback when the ATNA60CL10-0 panel isn't found.
+local laptopPanels = {
+    ["0x4193"]       = { mode = "2880x1800@90",  position = "1600x1440", scale = 1.66669 },
+    ["ATNA60CL10-0"] = { mode = "2880x1800@120", position = "1600x1440", scale = 1.5 },
+}
+local laptopOutput  = "eDP-1"
+local laptopMonitor = outputByEdid("ATNA60CL10-0") and laptopPanels["ATNA60CL10-0"] or laptopPanels["0x4193"]
 
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
 local monitors = {
-    { output = "desc:Samsung Display Corp. 0x4193",                        mode = laptopMonitor.mode,  position = laptopMonitor.position, scale = laptopMonitor.scale },
-    { output = "desc:Samsung Display Corp. ATNA60CL10-0",                  mode = "2880x1800@120",     position = "1600x1440", scale = 1.5 },
+    { output = "desc:Samsung Display Corp. 0x4193",                        mode = laptopPanels["0x4193"].mode,       position = laptopPanels["0x4193"].position,       scale = laptopPanels["0x4193"].scale },
+    { output = "desc:Samsung Display Corp. ATNA60CL10-0",                  mode = laptopPanels["ATNA60CL10-0"].mode, position = laptopPanels["ATNA60CL10-0"].position, scale = laptopPanels["ATNA60CL10-0"].scale },
     { output = "desc:Iiyama North America PL2792Q 1226152820953",          mode = "2560x1440@100.00",  position = "0x0",       scale = 1 },
     { output = "desc:Iiyama North America PL2792Q 1226152820959",          mode = "2560x1440@100.00",  position = "2560x0",    scale = 1 },
     { output = "desc:iiyama Corporation PL2792Q 1226152820953",            mode = "2560x1440@100.00",  position = "0x0",       scale = 1 },
@@ -33,6 +49,30 @@ for _, m in ipairs(monitors) do
 end
 -- hl.monitor({ output = "eDP-1", disabled = true })                                          -- for disabling
 -- hl.monitor({ output = "DP-1", mode = "1680x1050@60", position = "auto", scale = 1, mirror = "eDP-1" }) -- for mirroring
+
+
+--------------------------
+---- WORKSPACE LAYOUT ----
+--------------------------
+
+-- Pin workspaces to monitors. External monitors are found by serial in their EDID, since the
+-- same monitor can report different vendor names (see the duplicate iiyama entries above).
+local m953 = outputByEdid("1226152820953")
+local m959 = outputByEdid("1226152820959")
+
+if m953 then
+    hl.workspace_rule({ workspace = "1", monitor = m953, default = true })
+    hl.workspace_rule({ workspace = "2", monitor = m953 })
+end
+if m959 then
+    hl.workspace_rule({ workspace = "3", monitor = m959, default = true })
+    hl.workspace_rule({ workspace = "4", monitor = m959 })
+end
+hl.workspace_rule({ workspace = "5", monitor = laptopOutput, default = true })
+
+-- Monitors are only looked up on config load, so reload when one is plugged in.
+-- "config-only" skips re-applying monitors, so the reload doesn't fire monitor.added again.
+hl.on("monitor.added", function() hl.exec_cmd("hyprctl reload config-only") end)
 
 
 ---------------------
@@ -60,6 +100,10 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     -- for gtk3 apps you need the adw-gtk3 theme (sudo pacman -S adw-gtk-theme)
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'")
+
+    -- Open the browsers on their workspaces
+    hl.exec_cmd("firefox", { workspace = "1 silent" })
+    hl.exec_cmd("brave",   { workspace = "2 silent" })
 end)
 
 
