@@ -34,6 +34,7 @@ sudo pacman -S qt5-wayland qt6-wayland firefox mpv zathura zathura-pdf-mupdf pas
 ### Give execution permissions to scripts
 ```
 chmod +x .config/waybar/scripts/*
+chmod +x .config/hypr/scripts/*
 ```
 
 

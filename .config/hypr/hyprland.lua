@@ -68,11 +68,15 @@ if m959 then
     hl.workspace_rule({ workspace = "3", monitor = m959, default = true })
     hl.workspace_rule({ workspace = "4", monitor = m959 })
 end
-hl.workspace_rule({ workspace = "5", monitor = laptopOutput, default = true })
+hl.workspace_rule({ workspace = "9", monitor = laptopOutput, default = true })
 
 -- Monitors are only looked up on config load, so reload when one is plugged in.
 -- "config-only" skips re-applying monitors, so the reload doesn't fire monitor.added again.
-hl.on("monitor.added", function() hl.exec_cmd("hyprctl reload config-only") end)
+-- The script redraws waybar and hyprpaper, which don't always pick up returning monitors.
+hl.on("monitor.added", function()
+    hl.exec_cmd("hyprctl reload config-only")
+    hl.exec_cmd("~/.config/hypr/scripts/refresh-bars.sh")
+end)
 
 
 ---------------------
@@ -340,7 +344,8 @@ hl.bind("switch:on:Lid Switch", function()
     hl.monitor({ output = laptopOutput, disabled = true })
 end, { locked = true })
 hl.bind("switch:off:Lid Switch", function()
-    hl.monitor({ output = laptopOutput, mode = laptopMonitor.mode, position = laptopMonitor.position, scale = laptopMonitor.scale })
+    -- disabled = false is needed to override the rule set on lid close
+    hl.monitor({ output = laptopOutput, mode = laptopMonitor.mode, position = laptopMonitor.position, scale = laptopMonitor.scale, disabled = false })
 end, { locked = true })
 
 
