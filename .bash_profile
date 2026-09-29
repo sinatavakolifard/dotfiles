@@ -17,7 +17,8 @@
 if [ "$(tty)" = "/dev/tty1" ];then
   # Hybrid-GPU laptop only: /dev/dri/{igpu,dgpu} come from a udev rule
   # (/etc/udev/rules.d/61-gpu-names.rules). Machines without it skip this.
-  if [[ -e /dev/dri/dgpu ]]; then
+  # dgpu is absent while nvidia_drm is blocked (etc/modprobe.d/nvidia.conf).
+  if [[ -e /dev/dri/igpu ]]; then
     # Only hand the dGPU to Hyprland when an external monitor is on its ports;
     # otherwise Hyprland (and Xwayland via DRM lease) keep it from suspending.
     # Plugging a monitor into the dGPU ports later requires re-login.

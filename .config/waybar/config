@@ -23,7 +23,7 @@
         "cpu",
         "memory",
         "temperature",
-        "backlight",
+        "custom/backlight",
         "hyprland/language",
         "bluetooth",
         "pulseaudio",
@@ -68,13 +68,19 @@
         "format": "{icon} {temperatureC}°",
         "format-icons": ["", "", "", "", ""]
     },
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{icon}  {percent}%",
+    // Not the built-in "backlight" module: it reads every device in
+    // /sys/class/backlight (ignoring "device"), including the bogus nvidia_0,
+    // which deadlocks against nvidia-modeset during resume.
+    "custom/backlight": {
+        "exec": "b=/sys/class/backlight/intel_backlight; p=$(( $(cat $b/brightness) * 100 / $(cat $b/max_brightness) )); echo \"{\\\"percentage\\\": $p}\"",
+        "return-type": "json",
+        "interval": 5,
+        "signal": 8,
+        "format": "{icon}  {percentage}%",
         "format-icons": ["", "", "", "", "", "", "", "", ""],
-        // "format-icons": [""],
-        "on-scroll-up": "brightnessctl s 5%+",
-        "on-scroll-down": "brightnessctl s 5%-"
+        "tooltip": false,
+        "on-scroll-up": "brightnessctl -d intel_backlight s 5%+ && pkill -RTMIN+8 waybar",
+        "on-scroll-down": "brightnessctl -d intel_backlight s 5%- && pkill -RTMIN+8 waybar"
     },
     "battery": {
         "interval": 10,
