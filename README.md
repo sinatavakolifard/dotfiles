@@ -366,6 +366,77 @@ Also install these in Nvidia GPUs:
 sudo pacman -S nvidia-open nvidia-prime nvidia-utils
 ```
 
+# System files (`etc/` and `usr/`)
+The `etc/` and `usr/` folders mirror paths under `/`. They hold system-wide fixes for my TUXEDO laptop (Intel iGPU + NVIDIA RTX 5060 dGPU, Thunderbolt dock, Bluetooth keyboard/mouse). Unlike `.config/`, **do not symlink them**. They are read by root, by udev and by the initramfs, often before `/home` is mounted (and `/home` may be encrypted). Copy them with the right owner and permissions instead.
+
+| File | What it does |
+|------|--------------|
+| `etc/modprobe.d/nvidia.conf` | Lets the dGPU power down when idle (`NVreg_DynamicPowerManagement=0x02`) and blocks `nvidia_modeset`/`nvidia_drm`. Those modules register a bogus `nvidia_0` backlight after resume, which deadlocks resume. `nvidia` and `nvidia_uvm` (CUDA) still load. |
+| `etc/modprobe.d/nvidia-utils.conf` | Replaces `/usr/lib/modprobe.d/nvidia-utils.conf` (same name wins) to remove `nvidia-drm` from the softdep. |
+| `etc/udev/rules.d/61-gpu-names.rules` | Creates stable `/dev/dri/igpu` and `/dev/dri/dgpu` symlinks. `.bash_profile` uses them to set `AQ_DRM_DEVICES` for Hyprland. |
+| `etc/udev/rules.d/80-nvidia-pm.rules` | Enables runtime power management on the NVIDIA PCI device, so the dGPU can suspend. |
+| `etc/udev/rules.d/90-bluetooth-wakeup.rules` | Lets the Bluetooth keyboard/mouse wake the laptop from suspend (enables USB wakeup on the Intel BT adapter and its root hub). |
+| `etc/systemd/sleep.conf.d/hibernate.conf` | Powers off completely after hibernating, so USB/dock events cannot wake the laptop from S4. |
+| `usr/lib/systemd/system-sleep/thunderbolt-reset` | After hibernation, re-probes the Thunderbolt controller so the dock monitors come back (same as re-plugging the dock). |
+
+Tradeoffs of blocking `nvidia_drm`:
+- Monitors wired to the dGPU's own ports do not work (monitors on the dock/iGPU do).
+- `prime-run` cannot present Vulkan/OpenGL windows. CUDA still works.
+- To undo it, delete the two `install ... /bin/false` lines from `nvidia.conf` and run `mkinitcpio -P`.
+
+### Adapt to your hardware first
+Some files hard-code PCI addresses and USB IDs from my laptop. Check yours:
+```
+lspci -D | grep -Ei 'vga|3d|thunderbolt'
+lsusb | grep -i bluetooth
+```
+- `61-gpu-names.rules`: `0000:00:02.0` (iGPU) and `0000:02:00.0` (dGPU)
+- `thunderbolt-reset`: `0000:00:0d.2` (Thunderbolt controller)
+- `90-bluetooth-wakeup.rules`: `8087:0033` (Intel Bluetooth adapter)
+- `.bash_profile` also has `pci-0000:00:02.0` and `MESA_VK_DEVICE_SELECT=8086:7d67` (iGPU vendor:device, see `lspci -nn`)
+
+Skip the NVIDIA files on machines without an NVIDIA GPU. The `.bash_profile` block only runs when `/dev/dri/igpu` exists, so the same dotfiles work on machines that don't have these files.
+
+### Install
+```
+cd ~/dotfiles
+sudo install -Dm644 -t /etc/modprobe.d etc/modprobe.d/*.conf
+sudo install -Dm644 -t /etc/udev/rules.d etc/udev/rules.d/*.rules
+sudo install -Dm644 -t /etc/systemd/sleep.conf.d etc/systemd/sleep.conf.d/hibernate.conf
+sudo install -Dm755 -t /usr/lib/systemd/system-sleep usr/lib/systemd/system-sleep/thunderbolt-reset
+```
+
+### Apply
+The `modconf` hook copies `/etc/modprobe.d` into the initramfs, so rebuild it and reboot:
+```
+sudo mkinitcpio -P
+sudo reboot
+```
+If only a udev rule or the sleep settings changed, you do not need to reboot:
+```
+sudo udevadm control --reload
+sudo udevadm trigger
+```
+`sleep.conf.d` and the `system-sleep` hook are read each time the laptop suspends or hibernates, so they need nothing extra.
+
+### Check that it works
+```
+lsmod | grep -E '^nvidia_(drm|modeset)'                      # prints nothing
+cat /sys/bus/pci/devices/0000:02:00.0/power/runtime_status   # suspended (when idle)
+ls -l /dev/dri/igpu                                          # symlink exists
+systemd-analyze cat-config systemd/sleep.conf | grep HibernateMode
+```
+
+### After updates
+- After an `nvidia-utils` update, compare the packaged file with the override and copy any new lines into `etc/modprobe.d/nvidia-utils.conf`:
+  ```
+  diff /usr/lib/modprobe.d/nvidia-utils.conf /etc/modprobe.d/nvidia-utils.conf
+  ```
+- To see whether the installed files still match the repo:
+  ```
+  for f in $(find etc usr -type f); do diff -q "$f" "/$f"; done
+  ```
+
 # Camera in Linux
 If camera in Linux is not having good quality, you can install this and change settings:
 ```
