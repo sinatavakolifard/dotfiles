@@ -26,7 +26,10 @@ missing() {
 # retrains first), and right after resume Hyprland may list no monitors at all. So a check only
 # counts as good when monitors are listed, and it has to be good twice in a row, 2s apart.
 # 9>&- keeps hyprpaper from inheriting the lock, so it is released when this script ends
+# Waybar 0.15 can also deadlock (seen after resume) and then ignores SIGUSR2, so after 3
+# reloads that didn't help it is killed; SIGKILL (137) makes waybar.sh start a fresh one.
 good=0
+reloads=0
 for _ in $(seq 15); do
     if [ -e "$again" ]; then
         rm -f "$again"
@@ -42,7 +45,16 @@ for _ in $(seq 15); do
         else
             good=0
             echo "no bar on: $no_bar; no wallpaper on: $no_paper" | tr '\n' ' ' | systemd-cat -t refresh-bars
-            [ -n "$no_bar" ] && pkill -SIGUSR2 -x waybar
+            if [ -n "$no_bar" ]; then
+                reloads=$((reloads + 1))
+                if [ "$reloads" -gt 3 ]; then
+                    echo "waybar ignored reloads, killing it" | systemd-cat -t refresh-bars -p warning
+                    pkill -KILL -x waybar
+                    reloads=0
+                else
+                    pkill -SIGUSR2 -x waybar
+                fi
+            fi
             if [ -n "$no_paper" ] && pkill -x hyprpaper; then
                 hyprpaper 9>&- &
             fi
