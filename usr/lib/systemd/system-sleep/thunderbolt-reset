@@ -1,0 +1,14 @@
+#!/bin/sh
+# After hibernation the Thunderbolt DP tunnel to the dock is torn down and never
+# rebuilt ("(DP): not active, tearing down"), so the dock monitors stay dark.
+# Re-probing the Thunderbolt controller sets the dock up again, like a replug.
+# Suspend is not affected, so this only runs after hibernation.
+[ "$1" = post ] && [ "$2" = hibernate ] || exit 0
+
+tb=/sys/bus/pci/drivers/thunderbolt
+dev=0000:00:0d.2
+[ -e "$tb/$dev" ] || exit 0
+
+echo "$dev" > "$tb/unbind"
+sleep 2
+echo "$dev" > "$tb/bind"
