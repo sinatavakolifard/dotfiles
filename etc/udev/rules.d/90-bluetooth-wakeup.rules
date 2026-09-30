@@ -1,0 +1,7 @@
+# Let the Bluetooth keyboard/mouse wake the laptop from suspend.
+# The Intel BT adapter (USB 8087:0033) and its root hub come up with
+# power/wakeup=disabled, so only the built-in keyboard could wake it.
+# Enabling the root hub also lets plugging/unplugging a USB device on that
+# bus (e.g. the dock) wake the laptop.
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="8087", ATTR{idProduct}=="0033", \
+    ATTR{power/wakeup}="enabled", RUN+="/bin/sh -c 'echo enabled > /sys%p/../power/wakeup'"

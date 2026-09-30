@@ -6,9 +6,13 @@
 # the lid (which waybar handles by itself) doesn't make every bar flicker.
 
 # The lock makes monitors added together (e.g. both dock monitors) trigger a single refresh:
-# the first call takes it, the others exit.
+# the first call takes it, the others leave a marker (so it starts checking again) and exit.
+# That call keeps checking for a while, because after resume the dock monitors return one by
+# one and a reload sent too early doesn't stick.
+again="$XDG_RUNTIME_DIR/hypr-monitor-refresh.again"
 exec 9>"$XDG_RUNTIME_DIR/hypr-monitor-refresh.lock"
-flock -n 9 || exit 0
+flock -n 9 || { touch "$again"; exit 0; }
+rm -f "$again"
 
 sleep 1 # let the monitors come up
 
@@ -18,10 +22,32 @@ missing() {
         '. as $l | $mons[].name | select([$l[.].levels[]?[]?.namespace] | index($ns) | not)'
 }
 
-if [ -n "$(missing waybar)" ]; then
-    pkill -SIGUSR2 -x waybar
-fi
+# Monitors that come back after resume can appear a few seconds late (the dock's MST link
+# retrains first), and right after resume Hyprland may list no monitors at all. So a check only
+# counts as good when monitors are listed, and it has to be good twice in a row, 2s apart.
 # 9>&- keeps hyprpaper from inheriting the lock, so it is released when this script ends
-if [ -n "$(missing hyprpaper)" ] && pkill -x hyprpaper; then
-    hyprpaper 9>&- &
-fi
+good=0
+for _ in $(seq 15); do
+    if [ -e "$again" ]; then
+        rm -f "$again"
+        good=0
+    elif [ -z "$(hyprctl monitors -j | jq -r '.[].name')" ]; then
+        good=0
+    else
+        no_bar=$(missing waybar)
+        no_paper=$(missing hyprpaper)
+        if [ -z "$no_bar$no_paper" ]; then
+            good=$((good + 1))
+            [ "$good" -ge 2 ] && exit 0
+        else
+            good=0
+            echo "no bar on: $no_bar; no wallpaper on: $no_paper" | tr '\n' ' ' | systemd-cat -t refresh-bars
+            [ -n "$no_bar" ] && pkill -SIGUSR2 -x waybar
+            if [ -n "$no_paper" ] && pkill -x hyprpaper; then
+                hyprpaper 9>&- &
+            fi
+        fi
+    fi
+    sleep 2
+done
+echo "gave up, still no bar on: $(missing waybar)" | tr '\n' ' ' | systemd-cat -t refresh-bars -p warning

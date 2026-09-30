@@ -365,3 +365,36 @@ Also install these in Nvidia GPUs:
 ```
 sudo pacman -S nvidia-open nvidia-prime nvidia-utils
 ```
+
+# Camera in Linux
+If camera in Linux is not having good quality, you can install this and change settings:
+```
+sudo pacman -S v4l-utils
+v4l2-ctl --list-ctrls
+v4l2-ctl --set-ctrl=brightness=20
+```
+
+Overall, the setting which works for me is this:
+```
+User Controls
+
+                     brightness 0x00980900 (int)    : min=-64 max=64 step=1 default=0 value=20 flags=has-min-max
+                       contrast 0x00980901 (int)    : min=0 max=100 step=1 default=50 value=45 flags=has-min-max
+                     saturation 0x00980902 (int)    : min=0 max=100 step=1 default=64 value=64 flags=has-min-max
+                            hue 0x00980903 (int)    : min=-180 max=180 step=1 default=0 value=0 flags=has-min-max
+        white_balance_automatic 0x0098090c (bool)   : default=1 value=0
+                          gamma 0x00980910 (int)    : min=100 max=500 step=1 default=300 value=300 flags=has-min-max
+                           gain 0x00980913 (int)    : min=0 max=128 step=1 default=64 value=64 flags=has-min-max
+           power_line_frequency 0x00980918 (menu)   : min=0 max=2 default=2 value=2 (60 Hz)
+      white_balance_temperature 0x0098091a (int)    : min=2800 max=6500 step=10 default=4600 value=5000 flags=has-min-max
+                      sharpness 0x0098091b (int)    : min=0 max=100 step=1 default=50 value=50 flags=has-min-max
+         backlight_compensation 0x0098091c (int)    : min=0 max=2 step=1 default=0 value=2 flags=has-min-max
+   region_of_interest_rectangle 0x00981ae1 (rect)   : value=(0,0)/1x1 flags=has-payload, has-min-max
+  region_of_interest_auto_ctrls 0x00981ae2 (bitmask): max=0x00000001 default=0x00000001 value=0x00000000 flags=has-min-max
+
+Camera Controls
+
+                  auto_exposure 0x009a0901 (menu)   : min=0 max=3 default=3 value=3 (Aperture Priority Mode)
+         exposure_time_absolute 0x009a0902 (int)    : min=50 max=4500 step=1 default=166 value=166 flags=inactive, has-min-max
+     exposure_dynamic_framerate 0x009a0903 (bool)   : default=0 value=1
+```
