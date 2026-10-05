@@ -34,3 +34,7 @@ export PATH="$HOME/Packages/flutter/bin:$PATH"
 
 # Put Claude bin to path
 export PATH="$HOME/.local/bin:$PATH"
+
+# Machine-specific settings (not tracked in dotfiles; differs per laptop).
+# Sourced last so it can override anything above.
+[ -f ~/.bashrc.local ] && source ~/.bashrc.local

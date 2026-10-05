@@ -15,7 +15,7 @@ Next, there is a simple instruction to set up a complete Arch Linux with Hyprlan
 
 ### Basic Arch Linux packages
 ```
-sudo pacman -S base base-devel linux linux-firmware linux-headers sof-firmware intel-ucode intel-media-driver mesa sudo git openssh nano vi pipewire pipewire-alsa pipewire-pulse man-db man-pages texinfo tlp bluez bluez-utils
+sudo pacman -S base base-devel linux linux-firmware linux-headers sof-firmware intel-ucode intel-media-driver mesa sudo git openssh nano vi wget pipewire pipewire-alsa pipewire-pulse man-db man-pages texinfo tlp bluez bluez-utils
 ```
 
 
@@ -52,6 +52,8 @@ For example:
 ```
 ln -sf ~/dotfiles/.config/waybar ~/.config/waybar
 ```
+
+Machine-specific shell settings go in `~/.bashrc.local`, which is not tracked and is sourced at the end of `.bashrc`.
 
 ## Weather in waybar
 To be able to use weather in waybar, create a .env file in your home directory (if not already existed) and add these lines based on your current location there so that it fetches your weather data.
