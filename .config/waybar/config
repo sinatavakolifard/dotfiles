@@ -79,8 +79,8 @@
         "format": "{icon}  {percentage}%",
         "format-icons": ["", "", "", "", "", "", "", "", ""],
         "tooltip": false,
-        "on-scroll-up": "brightnessctl -d intel_backlight s 5%+ && pkill -RTMIN+8 waybar",
-        "on-scroll-down": "brightnessctl -d intel_backlight s 5%- && pkill -RTMIN+8 waybar"
+        "on-scroll-up": "brightnessctl -d intel_backlight s 5%+ && pkill -RTMIN+8 -x waybar",
+        "on-scroll-down": "brightnessctl -d intel_backlight s 5%- && pkill -RTMIN+8 -x waybar"
     },
     "battery": {
         "interval": 10,
