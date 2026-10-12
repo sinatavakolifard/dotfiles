@@ -35,6 +35,9 @@ export PATH="$HOME/Packages/flutter/bin:$PATH"
 # Put Claude bin to path
 export PATH="$HOME/.local/bin:$PATH"
 
+# Load nvm (Arch package installs it to /usr/share/nvm)
+[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
+
 # Machine-specific settings (not tracked in dotfiles; differs per laptop).
 # Sourced last so it can override anything above.
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
