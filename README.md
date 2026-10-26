@@ -380,6 +380,9 @@ The `etc/` and `usr/` folders mirror paths under `/`. They hold system-wide fixe
 | `etc/udev/rules.d/90-bluetooth-wakeup.rules` | Lets the Bluetooth keyboard/mouse wake the laptop from suspend (enables USB wakeup on the Intel BT adapter and its root hub). |
 | `etc/systemd/sleep.conf.d/hibernate.conf` | Powers off completely after hibernating, so USB/dock events cannot wake the laptop from S4. |
 | `usr/lib/systemd/system-sleep/thunderbolt-reset` | After hibernation, re-probes the Thunderbolt controller so the dock monitors come back (same as re-plugging the dock). |
+| `usr/local/bin/webcam-settings` | Applies my settings (brightness, contrast, ...) to the Logitech C615 webcam. The values are a list at the top of the file. See [Camera in Linux](#camera-in-linux). |
+| `etc/udev/rules.d/91-webcam-settings.rules` | Runs `webcam-settings` when the webcam shows up (boot, plug-in, dock re-enumeration), because the camera forgets its settings. |
+| `usr/lib/systemd/system-sleep/webcam-settings` | Runs `webcam-settings` after suspend or hibernation. |
 
 Tradeoffs of blocking `nvidia_drm`:
 - Monitors wired to the dGPU's own ports do not work (monitors on the dock/iGPU do).
@@ -391,10 +394,12 @@ Some files hard-code PCI addresses and USB IDs from my laptop. Check yours:
 ```
 lspci -D | grep -Ei 'vga|3d|thunderbolt'
 lsusb | grep -i bluetooth
+ls /dev/v4l/by-id/
 ```
 - `61-gpu-names.rules`: `0000:00:02.0` (iGPU) and `0000:02:00.0` (dGPU)
 - `thunderbolt-reset`: `0000:00:0d.2` (Thunderbolt controller)
 - `90-bluetooth-wakeup.rules`: `8087:0033` (Intel Bluetooth adapter)
+- `91-webcam-settings.rules`: `046d:082c` (Logitech C615 webcam); `webcam-settings`: the `usb-046d_HD_Webcam_C615_*` name in `/dev/v4l/by-id/`
 - `.bash_profile` also has `pci-0000:00:02.0` and `MESA_VK_DEVICE_SELECT=8086:7d67` (iGPU vendor:device, see `lspci -nn`)
 
 Skip the NVIDIA files on machines without an NVIDIA GPU. The `.bash_profile` block only runs when `/dev/dri/igpu` exists, so the same dotfiles work on machines that don't have these files.
@@ -405,7 +410,8 @@ cd ~/dotfiles
 sudo install -Dm644 -t /etc/modprobe.d etc/modprobe.d/*.conf
 sudo install -Dm644 -t /etc/udev/rules.d etc/udev/rules.d/*.rules
 sudo install -Dm644 -t /etc/systemd/sleep.conf.d etc/systemd/sleep.conf.d/hibernate.conf
-sudo install -Dm755 -t /usr/lib/systemd/system-sleep usr/lib/systemd/system-sleep/thunderbolt-reset
+sudo install -Dm755 -t /usr/lib/systemd/system-sleep usr/lib/systemd/system-sleep/*
+sudo install -Dm755 -t /usr/local/bin usr/local/bin/webcam-settings
 ```
 
 ### Apply
@@ -440,11 +446,114 @@ systemd-analyze cat-config systemd/sleep.conf | grep HibernateMode
   ```
 
 # Camera in Linux
+## Keep the webcam settings (Logitech C615)
+The webcam forgets its settings (brightness, contrast, ...) and goes back to its defaults when it is unplugged and plugged in again, after sleep or hibernation, and after a shutdown. Its device name also changes (`/dev/video4`, `/dev/video5`, ...). Three files in this repo apply the settings again each time:
+
+| File in this repo | Installed to | What it does |
+|-------------------|--------------|--------------|
+| `usr/local/bin/webcam-settings` | `/usr/local/bin/webcam-settings` | The script. **Your settings are the list at the top of this file.** |
+| `etc/udev/rules.d/91-webcam-settings.rules` | `/etc/udev/rules.d/` | Runs the script at boot and each time the webcam is plugged in. |
+| `usr/lib/systemd/system-sleep/webcam-settings` | `/usr/lib/systemd/system-sleep/` | Runs the script after waking from sleep or hibernation. |
+
+The script finds the camera by its fixed name in `/dev/v4l/by-id/` (`usb-046d_HD_Webcam_C615_...-video-index0`), so the changing `/dev/videoN` number does not matter. On a PC without this webcam, the script does nothing.
+
+### Enable it on a new PC
+1. Install `v4l-utils` (it provides `v4l2-ctl`):
+   ```
+   sudo pacman -S v4l-utils
+   ```
+2. Get the dotfiles:
+   ```
+   git clone <this repo> ~/dotfiles   # or: cd ~/dotfiles && git pull
+   cd ~/dotfiles
+   ```
+3. Copy the three files into place. They must be copied, not symlinked, because udev and systemd run them as root, sometimes before `/home` is mounted.
+   ```
+   sudo install -Dm755 -t /usr/local/bin usr/local/bin/webcam-settings
+   sudo install -Dm644 -t /etc/udev/rules.d etc/udev/rules.d/91-webcam-settings.rules
+   sudo install -Dm755 -t /usr/lib/systemd/system-sleep usr/lib/systemd/system-sleep/webcam-settings
+   ```
+4. Make udev load the new rule, then apply the settings now (or unplug the webcam and plug it in again):
+   ```
+   sudo udevadm control --reload
+   webcam-settings
+   ```
+5. Check that the values are yours (see [Check that it works](#check-that-it-works-1)).
+
+No reboot is needed. From now on it runs by itself.
+
+### Change a setting
+1. See all controls, their range (`min`/`max`), default and current value:
+   ```
+   v4l2-ctl -d /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 -l
+   ```
+2. Try values live until the picture looks right, for example in a video call or with `mpv "av://v4l2:$(ls /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0)"` open:
+   ```
+   v4l2-ctl -d /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 -c brightness=160
+   ```
+   This change is lost on the next replug or sleep, so it is only for trying things out.
+3. When you are happy, put the value in the list at the top of `~/dotfiles/usr/local/bin/webcam-settings`. Each line is `control=value`, and the comment after `#` shows the range and default:
+   ```
+   brightness=160                  # 0-255, default 128
+   ```
+   To add a control that is not in the list, add a new line with its name from step 1.
+4. Install the changed script and apply it:
+   ```
+   cd ~/dotfiles
+   sudo install -Dm755 -t /usr/local/bin usr/local/bin/webcam-settings
+   webcam-settings
+   ```
+5. Commit the change, and on your other PC run `git pull` and step 4 again.
+
+Some values only work when their auto switch is off. While auto is on, the script skips them:
+
+| Value | Only works with |
+|-------|-----------------|
+| `white_balance_temperature` | `white_balance_automatic=0` |
+| `exposure_time_absolute` | `auto_exposure=1` (manual) |
+| `focus_absolute` | `focus_automatic_continuous=0` |
+
+With auto exposure on (`auto_exposure=3`), the camera also changes `gain` by itself, so the gain you set is only a starting point. Keep the auto switches above the values they control in the list, because the lines are applied from top to bottom.
+
+`power_line_frequency` is `0` off, `1` 50 Hz, `2` 60 Hz. If the picture flickers under room lights, use `1` (Europe uses 50 Hz).
+
+### Check that it works
+```
+v4l2-ctl -d /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 -l   # values match your list
+journalctl -t webcam-settings -b                                        # errors from this boot, empty is good
+```
+To test the automatic part, set a wrong value (`... -c brightness=128`), unplug and plug in the webcam (or suspend and wake up), and check again.
+
+If nothing happens on plug-in:
+- `ls /dev/v4l/by-id/` must show `usb-046d_HD_Webcam_C615_...`.
+- `udevadm info -a -n /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 | grep -E 'idVendor|idProduct'` must show `046d` and `082c`.
+
+### Use a different webcam
+Find its USB ID and name:
+```
+v4l2-ctl --list-devices
+ls /dev/v4l/by-id/
+udevadm info -a -n /dev/videoN | grep -E 'idVendor|idProduct'   # the first match is the camera
+```
+Then change `046d`/`082c` in `91-webcam-settings.rules`, the `usb-046d_HD_Webcam_C615_*` name in `webcam-settings`, and the list of controls (names and ranges differ between cameras). Install both files again and run `sudo udevadm control --reload`.
+
+### Turn it off
+```
+sudo rm /usr/local/bin/webcam-settings /etc/udev/rules.d/91-webcam-settings.rules /usr/lib/systemd/system-sleep/webcam-settings
+sudo udevadm control --reload
+```
+
+## Change settings by hand
 If camera in Linux is not having good quality, you can install this and change settings:
 ```
 sudo pacman -S v4l-utils
 v4l2-ctl --list-ctrls
 v4l2-ctl --set-ctrl=brightness=20
+```
+
+If you are using multiple webcams, you can set the specific one with -d command:
+```
+v4l2-ctl -d /dev/video4 -c contrast=28
 ```
 
 Overall, the setting which works for me is this:

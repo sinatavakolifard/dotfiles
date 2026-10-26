@@ -1,0 +1,7 @@
+#!/bin/sh
+# Re-apply my webcam settings after suspend or hibernation. The camera loses
+# them when it loses power, even if it isn't re-enumerated (then the udev rule
+# 91-webcam-settings.rules doesn't run). Wait in the background so resume
+# isn't held up and the camera is back before the settings are applied.
+[ "$1" = post ] || exit 0
+(sleep 3; /usr/local/bin/webcam-settings) >/dev/null 2>&1 &

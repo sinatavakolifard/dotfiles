@@ -1,0 +1,6 @@
+# Re-apply my webcam settings whenever the Logitech C615 (USB 046d:082c) shows
+# up: at boot, when it is plugged in, and when the dock re-enumerates it after
+# resume. The camera forgets its settings each time. The values live in
+# /usr/local/bin/webcam-settings.
+ACTION=="add", SUBSYSTEM=="video4linux", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082c", \
+    ATTR{index}=="0", RUN+="/usr/local/bin/webcam-settings $devnode"

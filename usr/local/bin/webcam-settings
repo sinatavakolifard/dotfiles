@@ -1,0 +1,43 @@
+#!/bin/sh
+# Apply my settings to the Logitech HD Webcam C615 (USB 046d:082c).
+# The camera forgets them when it is replugged, after sleep and after shutdown,
+# so the udev rule 91-webcam-settings.rules and the system-sleep hook
+# webcam-settings run this again. Run it by hand after changing a value:
+#   webcam-settings
+# List the controls, their ranges and the current values with:
+#   v4l2-ctl -d /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 -l
+
+# One control=value per line. Lines are applied top to bottom, so the auto
+# switches come first. The last three only take effect when their auto switch
+# is off: white_balance_automatic=0, auto_exposure=1 (manual),
+# focus_automatic_continuous=0.
+SETTINGS="
+white_balance_automatic=1       # 0-1, default 1
+auto_exposure=3                 # 1 manual, 3 aperture priority (auto), default 3
+focus_automatic_continuous=1    # 0-1, default 1
+brightness=150                  # 0-255, default 128
+contrast=27                     # 0-255, default 32
+saturation=32                   # 0-255, default 32
+gain=26                         # 0-255, default 64
+power_line_frequency=2          # 0 off, 1 50 Hz, 2 60 Hz, default 2
+sharpness=70                    # 0-255, default 22
+backlight_compensation=1        # 0-1, default 1
+exposure_dynamic_framerate=1    # 0-1, default 0
+pan_absolute=0                  # -36000-36000 in steps of 3600, default 0
+tilt_absolute=0                 # -36000-36000 in steps of 3600, default 0
+zoom_absolute=1                 # 1-5, default 1
+white_balance_temperature=6440  # 2800-6500, default 4000
+exposure_time_absolute=83       # 3-2047, default 166
+focus_absolute=51               # 0-255 in steps of 17, default 51
+"
+
+dev=${1:-$(ls /dev/v4l/by-id/usb-046d_HD_Webcam_C615_*-video-index0 2>/dev/null | head -n1)}
+[ -e "$dev" ] || exit 0
+
+echo "$SETTINGS" | sed 's/#.*//' | while read -r setting; do
+    [ -n "$setting" ] || continue
+    # The camera refuses values for controls whose auto switch is on.
+    v4l2-ctl -d "$dev" -l | grep -qE "^ *${setting%%=*} .*flags=.*inactive" && continue
+    err=$(v4l2-ctl -d "$dev" -c "$setting" 2>&1) ||
+        logger -t webcam-settings "$dev: $setting failed: $err"
+done
