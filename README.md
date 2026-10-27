@@ -379,6 +379,7 @@ The `etc/` and `usr/` folders mirror paths under `/`. They hold system-wide fixe
 | `etc/udev/rules.d/80-nvidia-pm.rules` | Enables runtime power management on the NVIDIA PCI device, so the dGPU can suspend. |
 | `etc/udev/rules.d/90-bluetooth-wakeup.rules` | Lets the Bluetooth keyboard/mouse wake the laptop from suspend (enables USB wakeup on the Intel BT adapter and its root hub). |
 | `etc/systemd/sleep.conf.d/hibernate.conf` | Powers off completely after hibernating, so USB/dock events cannot wake the laptop from S4. |
+| `etc/systemd/logind.conf.d/lid-holdoff.conf` | Waits 90 s instead of 30 s before acting on a closed lid after a suspend. With the default, a resume with the lid closed on the dock suspended again before the dock monitors were back, and the screens stayed black. |
 | `usr/lib/systemd/system-sleep/thunderbolt-reset` | After hibernation, re-probes the Thunderbolt controller so the dock monitors come back (same as re-plugging the dock). |
 | `usr/local/bin/webcam-settings` | Applies my settings (brightness, contrast, ...) to the Logitech C615 webcam. The values are a list at the top of the file. See [Camera in Linux](#camera-in-linux). |
 | `etc/udev/rules.d/91-webcam-settings.rules` | Runs `webcam-settings` when the webcam shows up (boot, plug-in, dock re-enumeration), because the camera forgets its settings. |
@@ -410,6 +411,7 @@ cd ~/dotfiles
 sudo install -Dm644 -t /etc/modprobe.d etc/modprobe.d/*.conf
 sudo install -Dm644 -t /etc/udev/rules.d etc/udev/rules.d/*.rules
 sudo install -Dm644 -t /etc/systemd/sleep.conf.d etc/systemd/sleep.conf.d/hibernate.conf
+sudo install -Dm644 -t /etc/systemd/logind.conf.d etc/systemd/logind.conf.d/lid-holdoff.conf
 sudo install -Dm755 -t /usr/lib/systemd/system-sleep usr/lib/systemd/system-sleep/*
 sudo install -Dm755 -t /usr/local/bin usr/local/bin/webcam-settings
 ```
@@ -425,7 +427,10 @@ If only a udev rule or the sleep settings changed, you do not need to reboot:
 sudo udevadm control --reload
 sudo udevadm trigger
 ```
-`sleep.conf.d` and the `system-sleep` hook are read each time the laptop suspends or hibernates, so they need nothing extra.
+`sleep.conf.d` and the `system-sleep` hook are read each time the laptop suspends or hibernates, so they need nothing extra. logind reads `logind.conf.d` only when it starts or reloads:
+```
+sudo systemctl kill -s HUP systemd-logind
+```
 
 ### Check that it works
 ```
@@ -433,6 +438,7 @@ lsmod | grep -E '^nvidia_(drm|modeset)'                      # prints nothing
 cat /sys/bus/pci/devices/0000:02:00.0/power/runtime_status   # suspended (when idle)
 ls -l /dev/dri/igpu                                          # symlink exists
 systemd-analyze cat-config systemd/sleep.conf | grep HibernateMode
+busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager HoldoffTimeoutUSec   # t 90000000
 ```
 
 ### After updates
