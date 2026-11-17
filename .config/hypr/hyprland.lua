@@ -66,7 +66,9 @@ if m953 then
 end
 if m959 then
     hl.workspace_rule({ workspace = "3", monitor = m959, default = true })
-    hl.workspace_rule({ workspace = "4", monitor = m959 })
+    for _, ws in ipairs({ "4", "5", "6", "7" }) do
+        hl.workspace_rule({ workspace = ws, monitor = m959 })
+    end
 end
 hl.workspace_rule({ workspace = "9", monitor = laptopOutput, default = true })
 
