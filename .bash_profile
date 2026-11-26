@@ -45,3 +45,7 @@ if [ "$(tty)" = "/dev/tty1" ];then
   # exec Hyprland
   exec start-hyprland
 fi
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
