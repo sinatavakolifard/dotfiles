@@ -74,11 +74,11 @@ if m959 then
 end
 hl.workspace_rule({ workspace = "9", monitor = laptopOutput, default = true })
 
--- Monitors are only looked up on config load, so reload when one is plugged in.
--- "config-only" skips re-applying monitors, so the reload doesn't fire monitor.added again.
--- The script redraws waybar and hyprpaper, which don't always pick up returning monitors.
+-- Monitors are only looked up on config load, so the script reloads the config when one is
+-- plugged in, but only once the monitors have settled: reloading while the dock monitors come
+-- back after resume crashed Hyprland 0.57.1. It also redraws waybar and hyprpaper, which don't
+-- always pick up returning monitors.
 hl.on("monitor.added", function()
-    hl.exec_cmd("hyprctl reload config-only")
     hl.exec_cmd("~/.config/hypr/scripts/refresh-bars.sh")
 end)
 
@@ -198,6 +198,12 @@ hl.config({
     -- unscale XWayland
     xwayland = {
         force_zero_scaling = true,
+    },
+
+    -- Hyprland's own log lines (not just aquamarine's), to trace crashes after resume.
+    -- Log: $XDG_RUNTIME_DIR/hypr/<instance>/hyprland.log, kept until reboot.
+    debug = {
+        disable_logs = false,
     },
 })
 
