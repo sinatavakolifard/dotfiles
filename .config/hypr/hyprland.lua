@@ -38,6 +38,8 @@ local monitors = {
     { output = "desc:Iiyama North America PL2792Q 1226152820959",          mode = "2560x1440@100.00",  position = "2560x0",    scale = 1 },
     { output = "desc:iiyama Corporation PL2792Q 1226152820953",            mode = "2560x1440@100.00",  position = "0x0",       scale = 1 },
     { output = "desc:iiyama Corporation PL2792Q 1226152820959",            mode = "2560x1440@100.00",  position = "2560x0",    scale = 1 },
+    { output = "desc:iiyama Corporation PL2792Q 1216732421920",            mode = "2560x1440@74.92",  position = "0x0",       scale = 1 },
+    { output = "desc:iiyama Corporation PL2792Q 1216732422645",            mode = "2560x1440@74.92",  position = "2560x0",    scale = 1 },
     { output = "desc:BNQ BenQ G2010W HA805853026",                         mode = "1680x1050@60",      position = "auto-up",   scale = 1 },
     { output = "desc:LG Electronics LG TV 0x01010101",                     mode = "1920x1080@60",      position = "auto",      scale = 1 },
     { output = "desc:Invalid Vendor Codename - RTK T133F demoset-1",       mode = "1920x1080@60",      position = "auto",      scale = 1 },
