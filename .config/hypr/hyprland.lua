@@ -283,6 +283,7 @@ hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd(terminal .. " -e " .. fileManage
 hl.bind(mainMod .. " + V",      hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P",      hl.dsp.window.pseudo()) -- dwindle
+hl.bind(mainMod .. " + J",      hl.dsp.layout("togglesplit")) -- dwindle: flip split between side-by-side and stacked
 hl.bind(mainMod .. " + F",         hl.dsp.window.fullscreen_state({ internal = 1, client = -1 }))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen_state({ internal = 3, client = -1 }))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("systemctl suspend"))
@@ -292,7 +293,6 @@ local function screenshot(grimArgs)
     return [[COMPLETE_DATE=$(date +%F-%H%M%S) && mkdir -p ~/Pictures/Screenshots && FILE=~/Pictures/Screenshots/Screenshot-"$COMPLETE_DATE".png && ]]
         .. "grim " .. grimArgs .. [[ - | wl-copy && wl-paste > "$FILE" && ]]
         .. [[notify-send -i "$FILE" -t 5000 "Screenshot taken" "Screenshot is saved to $FILE"]]
-hl.bind(mainMod .. " + J",      hl.dsp.layout("togglesplit")) -- dwindle: flip split between side-by-side and stacked
 end
 hl.bind("Print",         hl.dsp.exec_cmd(screenshot("")))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("REGION=$(slurp) && " .. screenshot('-g "$REGION"')))
