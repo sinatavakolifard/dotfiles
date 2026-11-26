@@ -378,7 +378,8 @@ The `etc/` and `usr/` folders mirror paths under `/`. They hold system-wide fixe
 | `etc/udev/rules.d/61-gpu-names.rules` | Creates stable `/dev/dri/igpu` and `/dev/dri/dgpu` symlinks. `.bash_profile` uses them to set `AQ_DRM_DEVICES` for Hyprland. |
 | `etc/udev/rules.d/80-nvidia-pm.rules` | Enables runtime power management on the NVIDIA PCI device, so the dGPU can suspend. |
 | `etc/udev/rules.d/90-bluetooth-wakeup.rules` | Lets the Bluetooth keyboard/mouse wake the laptop from suspend (enables USB wakeup on the Intel BT adapter and its root hub). |
-| `etc/systemd/sleep.conf.d/hibernate.conf` | Powers off completely after hibernating, so USB/dock events cannot wake the laptop from S4. |
+| `etc/systemd/sleep.conf.d/hibernate.conf` | Hibernates in `platform` mode (ACPI S4). With `shutdown` mode the laptop never powers off after hibernating: the NVIDIA driver hangs while shutting down a dGPU it has already suspended ("TLB invalidation failed" on the console, fans getting louder). |
+| `usr/lib/systemd/system-sleep/hibernate-wakeup` | Turns off USB/PCI wakeup while hibernated, so the Bluetooth keyboard/mouse or the dock cannot wake the laptop from S4. Turns it back on after resuming, so they still wake it from suspend. |
 | `etc/systemd/logind.conf.d/lid-holdoff.conf` | Waits 90 s instead of 30 s before acting on a closed lid after a suspend. With the default, a resume with the lid closed on the dock suspended again before the dock monitors were back, and the screens stayed black. |
 | `usr/lib/systemd/system-sleep/thunderbolt-reset` | After hibernation, re-probes the Thunderbolt controller so the dock monitors come back (same as re-plugging the dock). |
 | `usr/local/bin/webcam-settings` | Applies my settings (brightness, contrast, ...) to the Logitech C615 webcam. The values are a list at the top of the file. See [Camera in Linux](#camera-in-linux). |

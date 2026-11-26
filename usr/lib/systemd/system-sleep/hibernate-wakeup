@@ -1,0 +1,25 @@
+#!/bin/sh
+# Stop USB and PCI devices (Bluetooth keyboard/mouse, the Thunderbolt dock)
+# from waking the laptop out of hibernation (ACPI S4, see
+# sleep.conf.d/hibernate.conf). They stay able to wake it from suspend: the
+# devices turned off here are turned back on after resuming. The power button
+# still wakes it.
+state=/run/hibernate-wakeup
+
+case "$1/$2" in
+pre/hibernate)
+    : > "$state"
+    for f in /sys/bus/usb/devices/*/power/wakeup /sys/bus/pci/devices/*/power/wakeup; do
+        [ "$(cat "$f" 2>/dev/null)" = enabled ] || continue
+        echo disabled > "$f" && echo "$f" >> "$state"
+    done
+    ;;
+post/hibernate)
+    [ -f "$state" ] || exit 0
+    while read -r f; do
+        echo enabled > "$f" 2>/dev/null
+    done < "$state"
+    rm -f "$state"
+    ;;
+esac
+exit 0
