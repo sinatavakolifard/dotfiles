@@ -192,6 +192,7 @@ hl.config({
     misc = {
         force_default_wallpaper = -1,   -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = true, -- If true disables the random hyprland logo / anime girl background. :(
+        allow_session_lock_restore = true, -- lets a new hyprlock take over if the running one freezes or crashes
     },
 
     -- unscale XWayland
@@ -280,7 +281,7 @@ hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q",      hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + C",      hl.dsp.window.close())
 -- hl.bind(mainMod .. " + M",   hl.dsp.exit())
-hl.bind(mainMod .. " + L",      hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L",      hl.dsp.exec_cmd("loginctl lock-session")) -- runs hypridle's lock_cmd
 hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd(terminal .. " -e " .. fileManager))
 hl.bind(mainMod .. " + V",      hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd(menu))
