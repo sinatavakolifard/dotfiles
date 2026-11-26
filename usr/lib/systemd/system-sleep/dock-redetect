@@ -1,0 +1,14 @@
+#!/bin/sh
+# After hibernation, tell refresh-bars.sh (in each Hyprland user's session) to turn the dock
+# monitors off and on once they are back. While resuming, i915 restores the dock's DP link
+# before the Thunderbolt tunnel and the dock are ready, so the link fails ("Failed clock
+# recovery", "Failed to get ACT") and the dock monitors stay black (yellow LED) although
+# Hyprland lists them. Turning them off and on trains the link again.
+# Don't turn the monitors off before hibernating instead: they come back without a mode
+# (0x0), and the reload that turns them back on then crashes Hyprland 0.57.1.
+[ "$1/$2" = post/hibernate ] || exit 0
+for d in /run/user/*/hypr; do
+    [ -d "$d" ] || continue
+    touch "${d%/hypr}/hypr-hibernated"
+    chown --reference="${d%/hypr}" "${d%/hypr}/hypr-hibernated"
+done

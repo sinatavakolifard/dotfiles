@@ -14,6 +14,7 @@
 # That call keeps checking for a while, because after resume the dock monitors return one by
 # one and a reload sent too early doesn't stick.
 again="$XDG_RUNTIME_DIR/hypr-monitor-refresh.again"
+hibernated="$XDG_RUNTIME_DIR/hypr-hibernated"
 exec 9>"$XDG_RUNTIME_DIR/hypr-monitor-refresh.lock"
 flock -n 9 || { touch "$again"; exit 0; }
 rm -f "$again"
@@ -55,8 +56,28 @@ for _ in $(seq 15); do
     else
         settled=$((settled + 1))
         if [ "$settled" -ge 2 ] && [ "$reloaded" = 0 ]; then
-            hyprctl reload config-only >/dev/null
-            reloaded=1
+            if [ -e "$hibernated" ] && [ $(($(date +%s) - $(stat -c %Y "$hibernated"))) -lt 20 ]; then
+                : # too early after a hibernation, see below; check again on the next round
+            elif [ -e "$hibernated" ]; then
+                # First reload after a hibernation (marker from the dock-redetect sleep hook):
+                # the dock monitors may be listed but black (DP link failed during resume).
+                # Turning them off and on trains the link again; the full reload turns them
+                # back on from the monitor rules. Done 4 s after resume it didn't help, 20 s
+                # after resume it did. The settled check above made sure no monitor is 0x0,
+                # since a reload with a 0x0 monitor crashes Hyprland 0.57.1.
+                rm -f "$hibernated"
+                externals=$(hyprctl monitors -j | jq -r '.[].name | select(startswith("eDP") | not)')
+                echo "after hibernation, turning off and on: $externals" | tr '\n' ' ' | systemd-cat -t refresh-bars
+                for m in $externals; do
+                    hyprctl eval "hl.monitor({ output = \"$m\", disabled = true })" >/dev/null
+                done
+                sleep 2
+                hyprctl reload >/dev/null
+                reloaded=1
+            else
+                hyprctl reload config-only >/dev/null
+                reloaded=1
+            fi
         fi
         no_bar=$(missing waybar)
         no_paper=$(missing hyprpaper)

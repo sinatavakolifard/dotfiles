@@ -375,13 +375,14 @@ The `etc/` and `usr/` folders mirror paths under `/`. They hold system-wide fixe
 |------|--------------|
 | `etc/modprobe.d/nvidia.conf` | Lets the dGPU power down when idle (`NVreg_DynamicPowerManagement=0x02`) and blocks `nvidia_modeset`/`nvidia_drm`. Those modules register a bogus `nvidia_0` backlight after resume, which deadlocks resume. `nvidia` and `nvidia_uvm` (CUDA) still load. |
 | `etc/modprobe.d/nvidia-utils.conf` | Replaces `/usr/lib/modprobe.d/nvidia-utils.conf` (same name wins) to remove `nvidia-drm` from the softdep. |
+| `etc/modprobe.d/thunderbolt.conf` | Stops the Thunderbolt driver from giving up on a dock monitor's DP tunnel after 12 s (`dprx_timeout=-1`). After hibernating with the dock, it gave up, the screens stayed dark until the dock was unplugged, and one monitor stayed black until reboot. |
 | `etc/udev/rules.d/61-gpu-names.rules` | Creates stable `/dev/dri/igpu` and `/dev/dri/dgpu` symlinks. `.bash_profile` uses them to set `AQ_DRM_DEVICES` for Hyprland. |
 | `etc/udev/rules.d/80-nvidia-pm.rules` | Enables runtime power management on the NVIDIA PCI device, so the dGPU can suspend. |
 | `etc/udev/rules.d/90-bluetooth-wakeup.rules` | Lets the Bluetooth keyboard/mouse wake the laptop from suspend (enables USB wakeup on the Intel BT adapter and its root hub). |
 | `etc/systemd/sleep.conf.d/hibernate.conf` | Hibernates in `platform` mode (ACPI S4). With `shutdown` mode the laptop never powers off after hibernating: the NVIDIA driver hangs while shutting down a dGPU it has already suspended ("TLB invalidation failed" on the console, fans getting louder). |
 | `usr/lib/systemd/system-sleep/hibernate-wakeup` | Turns off USB/PCI wakeup while hibernated, so the Bluetooth keyboard/mouse or the dock cannot wake the laptop from S4. Turns it back on after resuming, so they still wake it from suspend. |
+| `usr/lib/systemd/system-sleep/dock-redetect` | After hibernation, tells `refresh-bars.sh` to turn the dock monitors off and on once they are back (20 s after resume). The Intel GPU brings up the dock link while resuming, before the dock is ready, so the monitors stay black (yellow LED). The second dock monitor is still lost until the dock is replugged. |
 | `etc/systemd/logind.conf.d/lid-holdoff.conf` | Waits 90 s instead of 30 s before acting on a closed lid after a suspend. With the default, a resume with the lid closed on the dock suspended again before the dock monitors were back, and the screens stayed black. |
-| `usr/lib/systemd/system-sleep/thunderbolt-reset` | After hibernation, re-probes the Thunderbolt controller so the dock monitors come back (same as re-plugging the dock). |
 | `usr/local/bin/webcam-settings` | Applies my settings (brightness, contrast, ...) to the Logitech C615 webcam. The values are a list at the top of the file. See [Camera in Linux](#camera-in-linux). |
 | `etc/udev/rules.d/91-webcam-settings.rules` | Runs `webcam-settings` when the webcam shows up (boot, plug-in, dock re-enumeration), because the camera forgets its settings. |
 | `usr/lib/systemd/system-sleep/webcam-settings` | Runs `webcam-settings` after suspend or hibernation. |
@@ -399,7 +400,6 @@ lsusb | grep -i bluetooth
 ls /dev/v4l/by-id/
 ```
 - `61-gpu-names.rules`: `0000:00:02.0` (iGPU) and `0000:02:00.0` (dGPU)
-- `thunderbolt-reset`: `0000:00:0d.2` (Thunderbolt controller)
 - `90-bluetooth-wakeup.rules`: `8087:0033` (Intel Bluetooth adapter)
 - `91-webcam-settings.rules`: `046d:082c` (Logitech C615 webcam); `webcam-settings`: the `usb-046d_HD_Webcam_C615_*` name in `/dev/v4l/by-id/`
 - `.bash_profile` also has `pci-0000:00:02.0` and `MESA_VK_DEVICE_SELECT=8086:7d67` (iGPU vendor:device, see `lspci -nn`)
